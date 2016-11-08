@@ -35,7 +35,6 @@ import java.util.List;
  */
 public interface NavigationContract {
     interface View {
-        void toggleRecentlyViewedNavigation(boolean visibility);
         void showProfiles(List<ProfileViewModel> profiles);
     }
 

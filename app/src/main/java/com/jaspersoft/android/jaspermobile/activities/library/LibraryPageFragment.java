@@ -141,6 +141,7 @@ public class LibraryPageFragment extends BaseFragment implements SortDialogFragm
     @OptionsItem(R.id.sort)
     final void startSorting() {
         SortDialogFragment.createBuilder(getFragmentManager())
+                .setWithAccessTimeOption(true)
                 .setInitialSortOption(sortOptions.getOrder())
                 .setTargetFragment(this)
                 .show();

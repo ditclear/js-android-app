@@ -251,6 +251,8 @@ public class LibraryFragment extends BaseFragment implements SwipeRefreshLayout.
 
         sortOrder = order;
         mSearchCriteria.setSortBy(order.getValue());
+        mSearchCriteria.setLimit(order == SortOrder.ACCESS_TIME ? 10: mLimit);
+        mSearchCriteria.setAccessType(order == SortOrder.ACCESS_TIME ? "viewed": null);
         loadFirstPage();
     }
 
@@ -464,7 +466,7 @@ public class LibraryFragment extends BaseFragment implements SwipeRefreshLayout.
                 firstVisibleItem = ((GridLayoutManager) layoutManager).findFirstCompletelyVisibleItemPosition();
             }
 
-            if (totalItemCount > 0 && firstVisibleItem + visibleItemCount >= totalItemCount - mTreshold) {
+            if (totalItemCount > 0 && firstVisibleItem + visibleItemCount >= totalItemCount - mTreshold && sortOrder != SortOrder.ACCESS_TIME) {
                 loadNextPage();
             }
         }
