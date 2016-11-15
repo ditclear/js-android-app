@@ -332,7 +332,7 @@ public abstract class BaseReportActivity extends CastActivity implements Toolbar
 
     private void changeChartType() {
         Intent chartTypesIntent = new Intent(this, ChartTypesActivity.class);
-        List<ChartType> chartTypesList = reportWidget.getAvailableChartTypes();
+        List<ChartType> chartTypesList = reportWidget.getReportProperties().getAvailableChartTypes();
         ArrayList<ChartType> chartTypes = new ArrayList<>(chartTypesList);
         chartTypesIntent.putParcelableArrayListExtra(ChartTypesActivity.CHART_TYPES_ARG, chartTypes);
 
