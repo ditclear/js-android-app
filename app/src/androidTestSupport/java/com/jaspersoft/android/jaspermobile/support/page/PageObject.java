@@ -30,12 +30,11 @@ import android.support.test.espresso.ViewAssertion;
 import android.view.View;
 
 import com.jaspersoft.android.jaspermobile.R;
+import com.jaspersoft.android.jaspermobile.support.matcher.WatchPeriod;
 
 import junit.framework.AssertionFailedError;
 
 import org.hamcrest.Matcher;
-
-import java.util.concurrent.TimeUnit;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -43,11 +42,12 @@ import static android.support.test.espresso.action.ViewActions.longClick;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
+import static android.support.test.espresso.matcher.ViewMatchers.withChild;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.jaspersoft.android.jaspermobile.support.matcher.AdditionalViewAction.openOverflowMenu;
 import static com.jaspersoft.android.jaspermobile.support.matcher.AdditionalViewAction.watch;
+import static com.jaspersoft.android.jaspermobile.support.matcher.AdditionalViewAssertion.exist;
 import static com.jaspersoft.android.jaspermobile.support.matcher.AdditionalViewAssertion.hasView;
 import static com.jaspersoft.android.jaspermobile.support.matcher.AdditionalViewAssertion.isShown;
 import static com.jaspersoft.android.jaspermobile.support.matcher.AdditionalViewAssertion.isToast;
@@ -61,9 +61,17 @@ import static org.hamcrest.core.AllOf.allOf;
  * @since 2.5
  */
 public abstract class PageObject {
+    public void initialDelay() {
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void titleMatches(Matcher<String> stringMatcher) {
-        onView(allOf((withText(stringMatcher)), withParent(withId(R.id.tb_navigation))));
+        onView(allOf(withChild(withText(stringMatcher)), isDisplayed()))
+                .check(exist());
     }
 
     public void dialogTitleMatches(String title) {
@@ -74,7 +82,7 @@ public abstract class PageObject {
     public void assertToastMessage(String string) {
         onView(withText(startsWith(string)))
                 .inRoot(isToast())
-                .perform(watch(isShown(), TimeUnit.SECONDS.toMillis(15)));
+                .perform(watch(isShown(), WatchPeriod.MEDIUM));
     }
 
     public void waitForToastDisappear() {
@@ -87,7 +95,7 @@ public abstract class PageObject {
 
         onView(withId(android.R.id.message))
                 .inRoot(isToast())
-                .perform(watch(not(isShown()), TimeUnit.SECONDS.toMillis(15)));
+                .perform(watch(not(isShown()), WatchPeriod.MEDIUM));
     }
 
     public void dialogPositiveButtonClick() {
