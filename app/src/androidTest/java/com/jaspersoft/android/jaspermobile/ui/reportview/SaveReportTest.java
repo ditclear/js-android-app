@@ -24,19 +24,21 @@
 
 package com.jaspersoft.android.jaspermobile.ui.reportview;
 
-import android.support.test.espresso.Espresso;
+import android.content.Intent;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
 
 import com.jaspersoft.android.jaspermobile.R;
-import com.jaspersoft.android.jaspermobile.support.page.LibraryPageObject;
-import com.jaspersoft.android.jaspermobile.support.page.LeftPanelPageObject;
-import com.jaspersoft.android.jaspermobile.support.page.ReportViewPageObject;
+import com.jaspersoft.android.jaspermobile.activities.save.SaveReportActivity_;
 import com.jaspersoft.android.jaspermobile.support.page.SaveReportPageObject;
+import com.jaspersoft.android.jaspermobile.support.rule.ActivityWithLoginRule;
+import com.jaspersoft.android.jaspermobile.support.rule.DisableAnimationsRule;
+import com.jaspersoft.android.jaspermobile.support.rule.SavePermissionRule;
 import com.jaspersoft.android.jaspermobile.ui.view.activity.NavigationActivity_;
-import com.jaspersoft.android.jaspermobile.support.rule.AuthenticateProfileTestRule;
+import com.jaspersoft.android.sdk.client.oxm.resource.ResourceLookup;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -44,9 +46,9 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.Matchers.anyOf;
+import java.math.BigInteger;
+import java.security.SecureRandom;
+
 import static org.hamcrest.Matchers.startsWith;
 
 /**
@@ -56,39 +58,69 @@ import static org.hamcrest.Matchers.startsWith;
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class SaveReportTest {
-
-    private LeftPanelPageObject leftPanelPageObject;
-    private LibraryPageObject libraryPageObject;
-    private ReportViewPageObject reportViewPageObject;
     private SaveReportPageObject saveReportPageObject;
+    private String fileName;
+
+    @ClassRule
+    public static TestRule disableAnimationsRule = new DisableAnimationsRule();
+
+    @ClassRule
+    public static TestRule savePermissionRule = new SavePermissionRule();
 
     @Rule
-    public ActivityTestRule<NavigationActivity_> page = new ActivityTestRule<>(NavigationActivity_.class);
-    @ClassRule
-    public static TestRule authRule = AuthenticateProfileTestRule.create();
+    public ActivityTestRule<NavigationActivity_> init = new ActivityWithLoginRule<>(NavigationActivity_.class);
+
+    @Rule
+    public ActivityTestRule<SaveReportActivity_> page = new ActivityTestRule<>(SaveReportActivity_.class, false, false);
+
+    @Rule
+    public ActivityTestRule<NavigationActivity_> si = new ActivityTestRule<>(NavigationActivity_.class, false, false);
 
     @Before
     public void init() {
-        reportViewPageObject = new ReportViewPageObject();
-        libraryPageObject = new LibraryPageObject();
         saveReportPageObject = new SaveReportPageObject();
-        leftPanelPageObject = new LeftPanelPageObject();
+        fileName = nextFileName();
 
-        libraryPageObject.awaitLibrary();
-        libraryPageObject.clickOnItem("03. Store Segment");
-        reportViewPageObject.awaitReport();
-        saveReportPageObject.clickMenuItem(anyOf(withText("Save Report"), withId(R.id.saveReport)));
+        launchReportSaveActivity();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        saveReportPageObject.waitForToastDisappear();
+    }
+
+    private void launchReportSaveActivity() {
+        Intent startIntent = new Intent();
+        startIntent.putExtra(SaveReportActivity_.RESOURCE_EXTRA, createStoreSegmentResourceLookup());
+        page.launchActivity(startIntent);
+
+        saveReportPageObject.initialDelay();
+    }
+
+    private void launchSavedItems() {
+        Intent repoIntent = new Intent();
+        repoIntent.putExtra("currentSelection", R.id.vg_saved_items);
+        si.launchActivity(repoIntent);
+
+        saveReportPageObject.initialDelay();
+    }
+
+    private ResourceLookup createStoreSegmentResourceLookup() {
+        ResourceLookup resourceLookup = new ResourceLookup();
+        resourceLookup.setLabel("03. Store Segment Performance Report");
+        resourceLookup.setDescription("Sample OLAP chart with HTML5 Grouped Bar chart and Filter. Created from an Ad Hoc View.");
+        resourceLookup.setUri("/public/Samples/Reports/03._Store_Segment_Performance_Report");
+        resourceLookup.setResourceType("reportUnit");
+        return resourceLookup;
+    }
+
+    private String nextFileName() {
+        return new BigInteger(130, new SecureRandom()).toString(24);
     }
 
     @Test
     public void savePageAppear() {
-        reportViewPageObject.titleMatches(startsWith("Save Report"));
-    }
-
-    @Test
-    public void navigationUp() {
-        Espresso.pressBack();
-        reportViewPageObject.awaitReport();
+        saveReportPageObject.titleMatches(startsWith("Save Report"));
     }
 
     @Test
@@ -107,65 +139,103 @@ public class SaveReportTest {
 
     @Test
     public void saveInHtml() {
-        saveReportPageObject.typeFileName("Test HTML saved item");
+        saveReportPageObject.typeFileName(fileName);
         saveReportPageObject.selectFormat("HTML");
         saveReportPageObject.clickSave();
-        Espresso.pressBack();
-        leftPanelPageObject.goToSavedItems();
-        saveReportPageObject.savedItemMatches("Test HTML saved item",  R.drawable.ic_file_html);
+        try {
+            saveReportPageObject.assertToastMessage("Failed to create local file storage");
+        } catch (Exception ex) {
+            launchSavedItems();
+            saveReportPageObject.savedItemMatches(fileName,  R.drawable.ic_file_html);
+        }
+        // test is success if there is no access to SD card too (expected behavior)
     }
 
     @Test
     public void saveInPdf() {
-        saveReportPageObject.typeFileName("Test PDF saved item");
+        saveReportPageObject.typeFileName(fileName);
         saveReportPageObject.selectFormat("PDF");
         saveReportPageObject.clickSave();
-        Espresso.pressBack();
-        leftPanelPageObject.goToSavedItems();
-        saveReportPageObject.savedItemMatches("Test PDF saved item",  R.drawable.ic_file_pdf);
+
+        try {
+            saveReportPageObject.assertToastMessage("Failed to create local file storage");
+        } catch (Exception ex) {
+            launchSavedItems();
+            saveReportPageObject.savedItemMatches(fileName,  R.drawable.ic_file_pdf);
+        }
+        // test is success if there is no access to SD card too (expected behavior)
     }
 
     @Test
     public void saveInXls() {
-        saveReportPageObject.typeFileName("Test XLS saved item");
+        saveReportPageObject.typeFileName(fileName);
         saveReportPageObject.selectFormat("XLS");
         saveReportPageObject.clickSave();
-        Espresso.pressBack();
-        leftPanelPageObject.goToSavedItems();
-        saveReportPageObject.savedItemMatches("Test XLS saved item",  R.drawable.ic_file_xls);
+
+        try {
+            saveReportPageObject.assertToastMessage("Failed to create local file storage");
+        } catch (Exception ex) {
+            launchSavedItems();
+            saveReportPageObject.savedItemMatches(fileName,  R.drawable.ic_file_xls);
+        }
+        // test is success if there is no access to SD card too (expected behavior)
     }
 
     @Test
     public void saveDuplication() {
-        saveReportPageObject.typeFileName("Duplicate HTML saved item");
+        saveReportPageObject.typeFileName(fileName);
         saveReportPageObject.clickSave();
 
-        reportViewPageObject.clickMenuItem(anyOf(withText("Save Report"), withId(R.id.saveReport)));
+        launchReportSaveActivity();
 
-        saveReportPageObject.typeFileName("Duplicate HTML saved item");
+        saveReportPageObject.typeFileName(fileName);
         saveReportPageObject.clickSave();
+        saveReportPageObject.initialDelay();
         saveReportPageObject.fileNameErrorMatches("A file with this name already exists.");
     }
 
     @Test
     public void saveInDifferentFormat() {
-        saveReportPageObject.typeFileName("Test saved report");
+        // NOTE:
+        // test is success if there is no access to SD card too (expected behavior)
+
+        saveReportPageObject.typeFileName(fileName);
         saveReportPageObject.clickSave();
 
-        reportViewPageObject.clickMenuItem(anyOf(withText("Save Report"), withId(R.id.saveReport)));
+        try {
+            saveReportPageObject.assertToastMessage("Failed to create local file storage");
+        } catch (Exception ex) {
+            launchReportSaveActivity();
+        } finally {
+            saveReportPageObject.waitForToastDisappear();
+        }
+
         saveReportPageObject.selectFormat("PDF");
-        saveReportPageObject.typeFileName("Test saved report");
+        saveReportPageObject.typeFileName(fileName);
         saveReportPageObject.clickSave();
 
-        reportViewPageObject.clickMenuItem(anyOf(withText("Save Report"), withId(R.id.saveReport)));
+        try {
+            saveReportPageObject.assertToastMessage("Failed to create local file storage");
+        } catch (Exception ex) {
+            launchReportSaveActivity();
+        } finally {
+            saveReportPageObject.waitForToastDisappear();
+        }
+
         saveReportPageObject.selectFormat("XLS");
-        saveReportPageObject.typeFileName("Test saved report");
+        saveReportPageObject.typeFileName(fileName);
         saveReportPageObject.clickSave();
 
-        Espresso.pressBack();
-        leftPanelPageObject.goToSavedItems();
-        saveReportPageObject.savedItemMatches("Test saved report", R.drawable.ic_file_html);
-        saveReportPageObject.savedItemMatches("Test saved report", R.drawable.ic_file_pdf);
-        saveReportPageObject.savedItemMatches("Test saved report", R.drawable.ic_file_html);
+        try {
+            saveReportPageObject.assertToastMessage("Failed to create local file storage");
+        } catch (Exception ex) {
+            launchSavedItems();
+
+            saveReportPageObject.savedItemMatches(fileName, R.drawable.ic_file_html);
+            saveReportPageObject.savedItemMatches(fileName, R.drawable.ic_file_pdf);
+            saveReportPageObject.savedItemMatches(fileName, R.drawable.ic_file_html);
+        } finally {
+            saveReportPageObject.waitForToastDisappear();
+        }
     }
 }
