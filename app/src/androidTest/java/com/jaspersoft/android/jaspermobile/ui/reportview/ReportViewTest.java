@@ -47,6 +47,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.longClick;
 import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.matcher.ViewMatchers.assertThat;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -127,18 +129,16 @@ public class ReportViewTest {
 
     @Test
     public void favoriteReport() {
-        reportViewPageObject.awaitReport();
-        reportViewPageObject.clickMenuItem(anyOf(withText("Add to favorites"), withId(R.id.favoriteAction)));
+        reportViewPageObject.menuItemAction(click(), anyOf(withText("Add to favorites"), withId(R.id.favoriteAction)));
         reportViewPageObject.menuItemMatches(withIconResource(R.drawable.ic_menu_star), anyOf(withText("Add to favorites"), withId(R.id.favoriteAction)));
 
-        reportViewPageObject.clickMenuItem(anyOf(withText("Add to favorites"), withId(R.id.favoriteAction)));
+        reportViewPageObject.menuItemAction(click(), anyOf(withText("Add to favorites"), withId(R.id.favoriteAction)));
         reportViewPageObject.menuItemMatches(withIconResource(R.drawable.ic_menu_star_outline), anyOf(withText("Add to favorites"), withId(R.id.favoriteAction)));
     }
 
     @Test
     public void favoriteItemHint() {
-        reportViewPageObject.awaitReport();
-        reportViewPageObject.longClickMenuItem(anyOf(withText("Add to favorites"), withId(R.id.favoriteAction)));
+        reportViewPageObject.menuItemAction(longClick(), anyOf(withText("Add to favorites"), withId(R.id.favoriteAction)));
         reportViewPageObject.assertToastMessage("Add to favorites");
     }
 
@@ -150,15 +150,14 @@ public class ReportViewTest {
 
     @Test
     public void aboutAction() {
-        reportViewPageObject.awaitReport();
-        reportViewPageObject.clickMenuItem(anyOf(withText("View Details"), withId(R.id.aboutAction)));
+        reportViewPageObject.menuItemAction(click(), anyOf(withText("View Details"), withId(R.id.aboutAction)));
         reportViewPageObject.dialogTitleMatches("03. Store Segment Performance Report");
     }
 
     @Test
     public void refreshReport() {
         reportViewPageObject.awaitReport();
-        reportViewPageObject.clickMenuItem(anyOf(withText("Refresh"), withId(R.id.refreshAction)));
+        reportViewPageObject.menuItemAction(click(), anyOf(withText("Refresh"), withId(R.id.refreshAction)));
         reportViewPageObject.awaitReport();
     }
 

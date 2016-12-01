@@ -120,7 +120,7 @@ public class ReportPaginationTest {
     @Test
     public void paginationDialogEnter() {
         reportPaginationPageObject.clickCurrentPage();
-        reportPaginationPageObject.selectPage(4);
+        reportPaginationPageObject.typePage(4);
         reportPaginationPageObject.dialogPositiveButtonClick();
 
         reportPaginationPageObject.currentMatches(withText("4"));
@@ -129,7 +129,7 @@ public class ReportPaginationTest {
     @Test
     public void paginationDialogCancel() {
         reportPaginationPageObject.clickCurrentPage();
-        reportPaginationPageObject.selectPage(3);
+        reportPaginationPageObject.typePage(3);
         reportPaginationPageObject.dialogNegativeButtonClick();
 
         reportPaginationPageObject.currentMatches(not(withText("3")));

@@ -25,14 +25,23 @@
 package com.jaspersoft.android.jaspermobile.support.rule;
 
 import android.app.Activity;
+import android.app.Application;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
 import android.support.test.rule.ActivityTestRule;
+import android.widget.ProgressBar;
+
+import com.jaspersoft.android.jaspermobile.R;
+import com.jaspersoft.android.jaspermobile.activities.report.BaseReportActivity;
+
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
 
 /**
  * @author Andrew Tivodar
  * @since 2.6
  */
 public class ActivityWithLoginRule<A extends Activity> extends ActivityTestRule<A> {
-   private final AuthRuleDelegate authRuleDelegate;
+    private final AuthRuleDelegate authRuleDelegate;
 
     public ActivityWithLoginRule(Class<A> activityClass) {
         super(activityClass);
@@ -47,6 +56,51 @@ public class ActivityWithLoginRule<A extends Activity> extends ActivityTestRule<
     public ActivityWithLoginRule(Class<A> activityClass, boolean initialTouchMode, boolean launchActivity) {
         super(activityClass, initialTouchMode, launchActivity);
         authRuleDelegate = new AuthRuleDelegate();
+    }
+
+    @Override
+    protected void beforeActivityLaunched() {
+        Application application = (Application) getInstrumentation().getTargetContext().getApplicationContext();
+        application.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
+            @Override
+            public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+            }
+
+            @Override
+            public void onActivityStarted(Activity activity) {
+                if (activity instanceof BaseReportActivity) {
+                    ProgressBar progressBar = ((ProgressBar) activity.findViewById(R.id.progressLoading));
+                    if (progressBar != null) {
+                        progressBar.setIndeterminateDrawable(new ColorDrawable(0xffffffff));
+                    }
+                }
+            }
+
+            @Override
+            public void onActivityResumed(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivityPaused(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivityStopped(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+
+            }
+
+            @Override
+            public void onActivityDestroyed(Activity activity) {
+
+            }
+        });
     }
 
     @Override
