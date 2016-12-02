@@ -28,21 +28,18 @@ buildscript {
     }
     dependencies {
         classpath "com.android.tools.build:gradle:" + androidToolsBuildGradle
-        classpath "com.neenbedankt.gradle.plugins:android-apt:" + androidApt
-        classpath "io.fabric.tools:gradle:" + fabricToolsVersion
-        classpath "com.getkeepsafe.dexcount:dexcount-gradle-plugin:" + dexCountToolsVersion
-        classpath 'com.dicedmelon.gradle:jacoco-android:0.1.1'
-        classpath "org.jacoco:org.jacoco.core:" + jacocoVersion
+        classpath "com.neenbedankt.gradle.plugins:android-apt:1.8"
+        classpath "io.fabric.tools:gradle:1.21.2"
     }
 }
 
 apply plugin: "com.android.application"
 apply plugin: "android-apt"
 apply plugin: "io.fabric"
-apply plugin: "com.getkeepsafe.dexcount"
-apply plugin: 'jacoco-android'
+apply plugin: 'jacoco'
 
-apply from: "scripts/build_utils.gradle"
+apply from: "build_utils.gradle"
+apply from: "tasks.gradle"
 
 repositories {
     maven { url "https://maven.fabric.io/public" }
@@ -191,12 +188,12 @@ android {
         compile("org.androidannotations:androidannotations-api:3.2")
         apt "org.androidannotations:androidannotations:3.2"
 
-        compile("com.google.dagger:dagger:${daggerVersion}")
-        apt "com.google.dagger:dagger-compiler:${daggerVersion}"
+        compile 'com.google.dagger:dagger:2.1'
+        apt "com.google.dagger:dagger-compiler:2.1"
         provided "javax.annotation:jsr250-api:1.0"
 
-        provided "com.google.auto.value:auto-value:${autoValue}"
-        apt "com.google.auto.value:auto-value:${autoValue}"
+        provided "com.google.auto.value:auto-value:1.2"
+        apt "com.google.auto.value:auto-value:1.2"
         apt "com.ryanharter.auto.value:auto-value-parcel:0.2.1"
 
         compile "com.jakewharton.timber:timber:2.5.0"
@@ -255,8 +252,4 @@ android {
             exclude group: 'com.android.support'
         }
     }
-}
-
-jacoco {
-    toolVersion = jacocoVersion
 }
