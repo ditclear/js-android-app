@@ -66,28 +66,22 @@ android {
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
-    if (project.hasProperty("JMA_STORE_FILE")) {
-        signingConfigs {
-            release {
-                storeFile file(JMA_STORE_FILE)
-                storePassword JMA_STORE_PASSWORD
-                keyAlias JMA_KEY_ALIAS
-                keyPassword JMA_KEY_PASSWORD
-            }
-        }
-
-        buildTypes {
-            release {
-                minifyEnabled true
-                proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard.cfg"
-                signingConfig signingConfigs.release
-            }
-        }
-    }
 
     buildTypes {
         debug {
             testCoverageEnabled = true
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard.cfg"
+            signingConfig signingConfigs {
+                release {
+                    storeFile project.hasProperty("JMA_STORE_FILE") ? file(JMA_STORE_FILE) : null
+                    storePassword project.hasProperty("JMA_STORE_PASSWORD") ? JMA_STORE_PASSWORD : null
+                    keyAlias project.hasProperty("JMA_KEY_ALIAS") ? JMA_KEY_ALIAS : null
+                    keyPassword project.hasProperty("JMA_KEY_PASSWORD") ? JMA_KEY_PASSWORD : null
+                }
+            }
         }
     }
 
@@ -146,14 +140,6 @@ android {
             resourcePackageName PACKAGE_NAME
             logLevel "WARN"
         }
-    }
-
-    aaptOptions {
-        additionalParameters "--no-version-vectors"
-    }
-
-    dexOptions {
-        javaMaxHeapSize "4g"
     }
 
     sourceSets {
