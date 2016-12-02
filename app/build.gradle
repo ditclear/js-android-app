@@ -64,11 +64,17 @@ android {
         // remove setup in AppConfiguratorImpl for production build type
         resValue "string", "google_analytics_tracking_id", "UA-59444864-2"
 
+        // If you use Crashlytic, please, setup constant "CRASHLYTICS_API_KEY" with valid API key Crashlytics provides.
+        // ATTENTION: App will crash silently due to missing API key. If you don"t need Crashlytics
+        // remove setup in AppConfiguratorImpl for production build type
+        manifestPlaceholders = [crashlyticsApiKey: "9d425447d513077d94708723fd9cf72803a745bc"]
+
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         debug {
+            ext.enableCrashlytics = false
             testCoverageEnabled = true
         }
         release {
@@ -114,24 +120,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
         encoding "ISO-8859-1"
-    }
-
-    productFlavors {
-        dev {
-            ext.enableCrashlytics = false
-        }
-        production {
-            // If you use Crashlytic, please, setup constant "CRASHLYTICS_API_KEY" with valid API key Crashlytics provides.
-            // ATTENTION: App will crash silently due to missing API key. If you don"t need Crashlytics
-            // remove setup in AppConfiguratorImpl for production build type
-            manifestPlaceholders = [crashlyticsApiKey: "9d425447d513077d94708723fd9cf72803a745bc"]
-        }
-    }
-
-    android.variantFilter { variant ->
-        if (variant.buildType.name.equals("debug") && variant.getFlavors().get(0).name.equals("production")) {
-            variant.setIgnore(true);
-        }
     }
 
     apt {
