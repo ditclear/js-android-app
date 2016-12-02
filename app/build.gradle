@@ -49,13 +49,11 @@ repositories {
 android {
     compileSdkVersion androidCompileSdkVersion
     buildToolsVersion androidBuildToolsVersion
-    useLibrary "org.apache.http.legacy"
 
     defaultConfig {
         applicationId PACKAGE_NAME
         minSdkVersion androidMinSdkVersion
         targetSdkVersion androidTargetSdkVersion
-        generatedDensities = []
 
         versionCode 2_06_00_000
         versionName "2.6.0"
