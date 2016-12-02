@@ -58,11 +58,11 @@ android {
         versionCode 2_06_00_000
         versionName "2.6.0"
 
-        if (project.hasProperty("GOOGLE_ANALYTICS_TRACKING_ID")) {
-            resValue "string", "google_analytics_tracking_id", GOOGLE_ANALYTICS_TRACKING_ID
-        } else {
-            resValue "string", "google_analytics_tracking_id", "SET_YOUR_ANALYTIC_TRACKING_ID"
-        }
+        // If you use Google Analytics, please, setup constant "google_analytics_tracking_id"
+        // with valid API key that Google Analytics provides.
+        // ATTENTION: If you don"t need Google Analytics
+        // remove setup in AppConfiguratorImpl for production build type
+        resValue "string", "google_analytics_tracking_id", "UA-59444864-2"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -127,17 +127,10 @@ android {
             ext.enableCrashlytics = false
         }
         production {
-            // If you new Crashlytics enabled, please, setup constant "CRASHLYTICS_API_KEY" in gradle.properties
-            // with valid API key Crashlytics provides.
-            if (project.hasProperty("CRASHLYTICS_API_KEY")) {
-                manifestPlaceholders = [crashlyticsApiKey: CRASHLYTICS_API_KEY]
-            } else {
-                // If API key wasn"t applied we disable io.fabric validation steps during build process.
-                // ATTENTION: App will crash silently due to missing API key. If you don"t need Crashlytics
-                // remove setup in AppConfiguratorImpl for production flavor
-                manifestPlaceholders = [crashlyticsApiKey: ""]
-                ext.enableCrashlytics = false
-            }
+            // If you use Crashlytic, please, setup constant "CRASHLYTICS_API_KEY" with valid API key Crashlytics provides.
+            // ATTENTION: App will crash silently due to missing API key. If you don"t need Crashlytics
+            // remove setup in AppConfiguratorImpl for production build type
+            manifestPlaceholders = [crashlyticsApiKey: "9d425447d513077d94708723fd9cf72803a745bc"]
         }
     }
 
@@ -234,19 +227,19 @@ android {
             exclude group: "commons-logging", module: "commons-logging"
             exclude group: "org.apache.httpcomponents", module: "httpclient"
         }
-        androidTestCompile ("com.android.support.test.espresso:espresso-core:2.2.2") {
+        androidTestCompile("com.android.support.test.espresso:espresso-core:2.2.2") {
             exclude group: 'com.android.support'
         }
 
-        androidTestCompile ('com.android.support.test.espresso:espresso-contrib:2.2.2') {
+        androidTestCompile('com.android.support.test.espresso:espresso-contrib:2.2.2') {
             exclude group: 'com.android.support'
         }
 
-        androidTestCompile ('com.android.support.test.espresso:espresso-intents:2.2.2') {
+        androidTestCompile('com.android.support.test.espresso:espresso-intents:2.2.2') {
             exclude group: 'com.android.support'
         }
 
-        androidTestCompile ('com.android.support.test.espresso:espresso-web:2.2.2') {
+        androidTestCompile('com.android.support.test.espresso:espresso-web:2.2.2') {
             exclude group: 'com.android.support'
         }
     }
