@@ -56,7 +56,7 @@ android {
             variant.mergedFlavor.versionCode = versionCode
             variant.mergedFlavor.versionName = versionName
 
-            renameApk(variant, generateApkName(versionName), versionNumber)
+            renameApk(variant, generateApkName(versionName))
         }
     }
 }
@@ -227,16 +227,10 @@ String generateApkName(String versionName) {
     return "${baseAppName}-${versionName}"
 }
 
-void renameApk(flavor, String apkName, String versionNumber) {
+void renameApk(flavor, String apkName) {
     def outputs = flavor.outputs
 
     outputs.each { output ->
-        if (flavor.buildType.zipAlignEnabled) {
-            // normal APK
-            output.outputFile = new File(output.outputFile.parent, "${apkName}.apk")
-        }
-        // 'unaligned' APK
-        String unalignedApkName = "${baseAppName}-${versionNumber}-unaligned.apk"
-        output.packageApplication.outputFile = new File(output.packageApplication.outputFile.parent, unalignedApkName)
+        output.outputFile = new File(output.outputFile.parent, "${apkName}.apk")
     }
 }
