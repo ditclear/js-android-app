@@ -22,20 +22,15 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-task jacocoTestReport(type: JacocoReport, dependsOn: ['test', 'connectedAndroidTest']) {
-    reports {
-        xml.enabled = true
-        html.enabled = true
-    }
-
+task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'connectedAndroidTest']) {
     def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
-    def debugTree = fileTree(dir: "${buildDir}/intermediates/classes/dev/debug", excludes: fileFilter)
+    def debugTree = fileTree(dir: "${buildDir}/intermediates/classes/debug", excludes: fileFilter)
     def mainSrc = "${project.projectDir}/src/main/java"
 
     sourceDirectories = files([mainSrc])
     classDirectories = files([debugTree])
     executionData = fileTree(dir: "$buildDir", includes: [
-            "jacoco/testDevDebugUnitTest.exec",
+            "jacoco/testDebugUnitTest.exec",
             "outputs/code-coverage/connected/*coverage.ec"
     ])
 }
