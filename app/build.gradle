@@ -130,13 +130,6 @@ android {
         }
     }
 
-    sourceSets {
-        String androidTestSupport = 'src/androidTestSupport/java'
-        androidTest {
-            java.srcDir androidTestSupport
-        }
-    }
-
     dependencies {
         provided project(":database-generator")
 
