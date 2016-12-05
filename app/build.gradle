@@ -61,12 +61,12 @@ android {
         // If you use Google Analytics, please, setup constant "google_analytics_tracking_id"
         // with valid API key that Google Analytics provides.
         // ATTENTION: If you don"t need Google Analytics
-        // remove setup in AppConfiguratorImpl for production build type
+        // remove setup in JasperAnalytics
         resValue "string", "google_analytics_tracking_id", "UA-59444864-2"
 
         // If you use Crashlytic, please, setup constant "CRASHLYTICS_API_KEY" with valid API key Crashlytics provides.
         // ATTENTION: App will crash silently due to missing API key. If you don"t need Crashlytics
-        // remove setup in AppConfiguratorImpl for production build type
+        // remove setup in AppConfiguratorImpl for release build type
         manifestPlaceholders = [crashlyticsApiKey: "9d425447d513077d94708723fd9cf72803a745bc"]
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -76,6 +76,10 @@ android {
         debug {
             ext.enableCrashlytics = false
             testCoverageEnabled = true
+        }
+        qa {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard.cfg"
         }
         release {
             minifyEnabled true

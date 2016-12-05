@@ -21,15 +21,10 @@
   ~ along with TIBCO Jaspersoft Mobile for Android.If not,see
   ~ <http://www.gnu.org/licenses/lgpl>.
   -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.jaspersoft.android.jaspermobile">
 
-    <application>
+<resources>
+    <int name="ga_dispatchPeriod">15</int>
+    <bool name="ga_dryRun">true</bool>
+    <string name="ga_logLevel">verbose</string>
 
-        <meta-data
-            android:name="com.crashlytics.ApiKey"
-            android:value="${crashlyticsApiKey}" />
-
-    </application>
-
-</manifest>
+</resources>
