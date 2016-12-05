@@ -22,7 +22,47 @@
  * <http://www.gnu.org/licenses/lgpl>.
  */
 
-task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'connectedAndroidTest']) {
+task jacocoUnitTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
+    group = "verification"
+    description = "Generates Jacoco coverage reports for unit tests"
+
+    reports {
+        xml{
+            enabled = true
+            destination "${buildDir}/reports/unitCoverage/report.xml"
+        }
+        html{
+            enabled true
+            destination "${buildDir}/reports/unitCoverage/html"
+        }
+    }
+
+    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
+    def debugTree = fileTree(dir: "${buildDir}/intermediates/classes/debug", excludes: fileFilter)
+    def mainSrc = "${project.projectDir}/src/main/java"
+
+    sourceDirectories = files([mainSrc])
+    classDirectories = files([debugTree])
+    executionData = fileTree(dir: "$buildDir", includes: [
+            "jacoco/testDebugUnitTest.exec"
+    ])
+}
+
+task jacocoOverallTestReport(type: JacocoReport, dependsOn: ['jacocoUnitTestReport', 'connectedAndroidTest']) {
+    group = "verification"
+    description = "Generates merged Jacoco coverage reports for unit and instrumentation tests"
+
+    reports {
+        xml{
+            enabled = true
+            destination "${buildDir}/reports/overallCoverage/report.xml"
+        }
+        html{
+            enabled true
+            destination "${buildDir}/reports/overallCoverage/html"
+        }
+    }
+
     def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
     def debugTree = fileTree(dir: "${buildDir}/intermediates/classes/debug", excludes: fileFilter)
     def mainSrc = "${project.projectDir}/src/main/java"
