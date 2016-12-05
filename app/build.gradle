@@ -56,7 +56,7 @@ android {
         targetSdkVersion androidTargetSdkVersion
 
         versionCode 2_06_00_000
-        versionName "2.6.0"
+        versionName "2.6.0.000"
 
         // If you use Google Analytics, please, setup constant "google_analytics_tracking_id"
         // with valid API key that Google Analytics provides.
