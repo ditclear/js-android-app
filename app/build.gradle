@@ -72,6 +72,15 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        release {
+            storeFile project.hasProperty("JMA_STORE_FILE") ? file(JMA_STORE_FILE) : null
+            storePassword project.hasProperty("JMA_STORE_PASSWORD") ? JMA_STORE_PASSWORD : null
+            keyAlias project.hasProperty("JMA_KEY_ALIAS") ? JMA_KEY_ALIAS : null
+            keyPassword project.hasProperty("JMA_KEY_PASSWORD") ? JMA_KEY_PASSWORD : null
+        }
+    }
+
     buildTypes {
         debug {
             ext.enableCrashlytics = false
@@ -84,14 +93,7 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard.cfg"
-            signingConfig signingConfigs {
-                release {
-                    storeFile project.hasProperty("JMA_STORE_FILE") ? file(JMA_STORE_FILE) : null
-                    storePassword project.hasProperty("JMA_STORE_PASSWORD") ? JMA_STORE_PASSWORD : null
-                    keyAlias project.hasProperty("JMA_KEY_ALIAS") ? JMA_KEY_ALIAS : null
-                    keyPassword project.hasProperty("JMA_KEY_PASSWORD") ? JMA_KEY_PASSWORD : null
-                }
-            }
+            signingConfig signingConfigs.release
         }
     }
 
