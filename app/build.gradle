@@ -90,6 +90,7 @@ android {
         qa {
             minifyEnabled true
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard.cfg"
+            signingConfig signingConfigs.debug
         }
         release {
             minifyEnabled true
