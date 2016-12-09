@@ -29,6 +29,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.jaspersoft.android.jaspermobile.R;
 import com.jaspersoft.android.jaspermobile.activities.inputcontrols.InputControlsActivity;
@@ -399,6 +400,10 @@ public abstract class BaseReportActivity extends CastActivity implements Toolbar
             case StatusCodes.EXPORT_ANCHOR_ABSENT:
                 showErrorMessage(getString(R.string.sr_failed_to_execute_report), ReportErrorActionView.NO_ACTION);
                 requestExceptionHandler.showCommonErrorMessage(exception);
+                break;
+            case StatusCodes.INTERNAL_ERROR:
+                showErrorMessage(getString(R.string.sr_failed_to_execute_report), ReportErrorActionView.RELOAD_ACTION);
+                Toast.makeText(this, exception.getMessage(), Toast.LENGTH_LONG).show();
                 break;
             default:
                 String errorMessage = requestExceptionHandler.extractMessage(exception);
