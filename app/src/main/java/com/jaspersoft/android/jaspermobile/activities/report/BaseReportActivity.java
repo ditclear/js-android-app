@@ -364,9 +364,11 @@ public abstract class BaseReportActivity extends CastActivity implements Toolbar
                 reportToolbar.setActionGroupEnabled(isAvailable);
                 reportPartsTabs.setEnabled(isAvailable);
                 paginationView.setEnabled(isAvailable);
+                break;
             }
             case ACTION_TYPE_CHANGE_CHART_TYPE: {
                 reportToolbar.setChangeChartTypeAvailable(isAvailable);
+                break;
             }
         }
     }
