@@ -108,7 +108,7 @@ public class ReportViewActivity extends BaseReportActivity {
         Intent castIntent = new Intent(this, ReportCastActivity.class);
         castIntent.putExtra(BaseReportActivity.RESOURCE_LOOKUP_ARG, resourceLookup);
         startActivity(castIntent);
-        finish();
+        onBackPressed();
     }
 
     @Override
@@ -118,10 +118,10 @@ public class ReportViewActivity extends BaseReportActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    public void onBackPressed() {
+        super.onBackPressed();
 
-        if (isFinishing()) {
+         if (isFinishing()) {
             getResourceDetailsByTypeCase.unsubscribe();
             getReportShowControlsPropertyCase.unsubscribe();
             saveScreenCaptureCase.unsubscribe();

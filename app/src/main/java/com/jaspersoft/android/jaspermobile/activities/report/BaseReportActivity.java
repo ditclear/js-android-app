@@ -175,7 +175,7 @@ public abstract class BaseReportActivity extends CastActivity implements Toolbar
                 showBookmarksPage();
                 return true;
             case android.R.id.home:
-                finish();
+                onBackPressed();
                 return true;
             case R.id.chageChartTypesAction:
                 changeChartType();
