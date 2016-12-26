@@ -251,7 +251,6 @@ public class LibraryFragment extends BaseFragment implements SwipeRefreshLayout.
 
         sortOrder = order;
         mSearchCriteria.setSortBy(order.getValue());
-        mSearchCriteria.setLimit(order == SortOrder.ACCESS_TIME ? 10: mLimit);
         mSearchCriteria.setAccessType(order == SortOrder.ACCESS_TIME ? "viewed": null);
         loadFirstPage();
     }
@@ -405,8 +404,13 @@ public class LibraryFragment extends BaseFragment implements SwipeRefreshLayout.
 
         @Override
         public void onNext(SearchResult result) {
-            mHasNextPage = !result.isReachedEnd();
-            addData(result.getLookups());
+            if (mSearchCriteria.getSortBy().equals(SortOrder.ACCESS_TIME.getValue())) {
+                mHasNextPage = false;
+                addData(result.getLookups().subList(0, Math.min(9, result.getLookups().size())));
+            } else {
+                mHasNextPage = !result.isReachedEnd();
+                addData(result.getLookups());
+            }
             showEmptyTextIfNoItems(R.string.resources_not_found);
         }
     }
